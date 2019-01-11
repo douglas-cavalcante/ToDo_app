@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, View, FlatList, TextInput, Button, TouchableHighlight } from "react-native";
+import { FlatList, StyleSheet, TouchableHighlight, Text, View, } from "react-native";
 import Item from "./Item";
-import axios from "axios";
 import { Font } from 'expo';
 
 export default class ListScreen extends React.Component {
@@ -10,21 +9,18 @@ export default class ListScreen extends React.Component {
     super(props);
     this.state = {
       list: [],
-      description: "",
-      fontLoaded: false,
     }
   }
 
   refresh = () => {
-    axios.get("https://b7web.com.br/todo/42387")
-      .then((response) => {
-        let state = this.state;
-        state.list = response.data.todo;
-        this.setState(state);
-      });
+    getItems().then((data) => {
+      let state = this.state;
+      state.list = data;
+      this.setState(state);
+    });
   }
 
-  load = (id) => {
+  filterList = (id) => {
     let state = this.state;
     state.list = state.list.filter(item => item.id !== id);
     this.setState(state);
@@ -39,7 +35,6 @@ export default class ListScreen extends React.Component {
     await Font.loadAsync({
       'open-sans-regular': require('../assets/fonts/OpenSans-Regular.ttf'),
     });
-    this.setState({ fontLoaded: true });
   }
 
   render() {
@@ -57,7 +52,7 @@ export default class ListScreen extends React.Component {
         <View style={styles.listContainer}>
           <FlatList
             data={this.state.list}
-            renderItem={({ item }) => <Item data={item} refresh={this.refresh} navigation={this.props.navigation} load={this.load} url="https://b7web.com.br/todo/42387" />}
+            renderItem={({ item }) => <Item data={item} refresh={this.refresh} navigation={this.props.navigation} filterList={this.filterList} url="https://b7web.com.br/todo/42387" />}
             keyExtractor={(item, index) => item.id}
           />
         </View>

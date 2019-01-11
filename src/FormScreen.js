@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Button, View, Text, TextInput, TouchableHighlight, StyleSheet } from "react-native";
-import axios from "axios";
+import { Button, View, Text, TextInput, StyleSheet } from "react-native";
+import { addItem, updateItem } from "./Service";
 
 export default class FormScreen extends Component {
 
@@ -20,32 +20,15 @@ export default class FormScreen extends Component {
         description: "",
       }
     }
-
-  
-    
   }
-
- 
-
 
   handleAdd = () => {
     const description = this.state.description;
     if (description) {
-      axios.post("https://b7web.com.br/todo/42387",
-        {
-          item: description
-        },
-        {
-          headers:
-          {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          }
-        }
-      ).then((response) => {
+      addItem(description).then((response) => {
         this.setState({ description: "" });
         alert("Cadastrado com sucesso");
-        this.props.navigation.state.params.refresh()
+        this.props.navigation.state.params.refresh();
       });
     } else {
       alert("Preencha o campo de descrição");
@@ -54,25 +37,14 @@ export default class FormScreen extends Component {
 
   handleUpdate = () => {
     if (this.state.description) {
-      console.log("entrei")
       if (this.props.navigation.state.params.data.id) {
-        axios.put(`https://b7web.com.br/todo/42387/${this.props.navigation.state.params.data.id}`,
-          {
-            item: this.state.description
-          },
-          {
-            headers:
-            {
-              Accept: "application/json",
-              "Content-Type": "application/json",
+        updateItem(this.props.navigation.state.params.data.id, this.state.description)
+          .then((response) => {
+            if (this.props.navigation) {
+              this.props.navigation.state.params.refresh()
+              alert("Atualizado !!!");
             }
-          }
-        ).then((response) => {
-          if (this.props.navigation) {
-            this.props.navigation.state.params.refresh()
-            alert("Atualizado !!!");
-          }
-        });
+          });
       }
     }
   }

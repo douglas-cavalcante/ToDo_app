@@ -17,5 +17,4 @@ const AppNavigator = createStackNavigator({
   defaultNavigationOptions: {}
 });
 
-
 export default AppNavigator;

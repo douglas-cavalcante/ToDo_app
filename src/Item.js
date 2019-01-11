@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, TouchableHighlight, Button, Alert } from "react-native";
-import axios from "axios";
+import { deleteItem, updateStatusItem } from './Service';
 
 export default class Item extends Component {
 
@@ -11,10 +11,9 @@ export default class Item extends Component {
     };
   }
 
-  marcar = () => {
+  checkedItem = () => {
     let state = this.state;
     let done = "sim";
-
     if (state.done == styles.undone) {
       state.done = styles.done;
       let done = "sim";
@@ -22,18 +21,7 @@ export default class Item extends Component {
       state.done = styles.undone;
       let done = "nao";
     }
-    axios.put(`${this.props.url}/${this.props.data.id}`,
-      {
-        done: done
-      },
-      {
-        headers:
-        {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        }
-      }
-    ).then((response) => { console.log(response) });
+    updateStatusItem(this.props.data.id, done).then((response) => { console.log(response) });
     this.setState({ state });
   }
 
@@ -43,7 +31,7 @@ export default class Item extends Component {
       this.props.data.item,
       'Deseja realmente excluir ? ',
       [
-        { text: 'Cancelar', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+        { text: 'Cancelar', onPress: () => { }, style: 'cancel' },
         { text: 'Quero excluir', onPress: () => this.excluir() },
       ],
       { cancelable: false }
@@ -51,21 +39,13 @@ export default class Item extends Component {
   }
 
   excluir = () => {
-    axios.delete(`${this.props.url}/${this.props.data.id}`,
-      {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        }
-      }
-    ).then((response) => { this.props.load(this.props.data.id); });
-
+    deleteItem(this.props.data.id).then((_response) => { this.props.filterList(this.props.data.id); });
   }
 
   render() {
     return (
       <View style={styles.areaItem}>
-        <TouchableHighlight style={{ marginRight: 10, marginLeft: 10, }} onPress={this.marcar}>
+        <TouchableHighlight style={{ marginRight: 10, marginLeft: 10, }} onPress={this.checkedItem}>
           <View style={[styles.marcaArea, this.state.done]}>
           </View>
         </TouchableHighlight>
@@ -77,7 +57,6 @@ export default class Item extends Component {
     );
   }
 }
-
 
 const styles = StyleSheet.create({
   areaItem: {
