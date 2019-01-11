@@ -2,6 +2,7 @@ import React from "react";
 import { FlatList, StyleSheet, TouchableHighlight, Text, View, } from "react-native";
 import Item from "./Item";
 import { Font } from 'expo';
+import { getItems } from "./Service";
 
 export default class ListScreen extends React.Component {
 
